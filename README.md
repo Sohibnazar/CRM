@@ -28,6 +28,9 @@
 1. Клонируйте репозиторий на ваш компьютер:
  
    git clone https://github.com/Sohibnazar/MY_CRM.git
+
+
+   
    cd MY_CRM
 
 2. Создайте виртуальное окружение
