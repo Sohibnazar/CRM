@@ -85,8 +85,13 @@ DATABASES = {
 }
 
 6. Примените миграции
+
 После настройки базы данных, выполните миграции:
+
+
+
 **python manage.py makemigrations**
+
 
 **python manage.py migrate**
 
