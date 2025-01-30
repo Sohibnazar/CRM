@@ -1,0 +1,6 @@
+<div class="bg-gradient-to-br {% if color %}from-{{ color }}-500 to-{{ color }}-400{% else %}from-indigo-500 to-indigo-400{% endif %} text-white rounded-lg shadow-lg p-6 text-center">
+    <h3 class="text-xl font-semibold mb-2">{{ label }}</h3>
+    <div class="flex justify-center items-center w-20 h-20 bg-white text-{{ color|default:'indigo' }}-600 text-4xl font-bold rounded-full mx-auto">
+        {{ count }}
+    </div>
+</div>

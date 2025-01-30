@@ -1,0 +1,230 @@
+{% extends 'core/index.html' %}
+
+{% block title %}Список заявок{% endblock %}
+
+{% block content %}
+<div class="flex h-screen">
+    {% include 'core/sidebar.html' %}
+    <div class="ml-64 w-full p-6 mt-16">  
+        <div class="flex justify-end items-center mb-4"> 
+            <form method="GET" action="" class="mb-4 flex space-x-2">
+                <select name="search_field" class="border p-2 rounded">
+                    <option value="client_name" {% if request.GET.search_field == 'client_name' %}selected{% endif %}>ФИО</option>
+                    <option value="account_number" {% if request.GET.search_field == 'account_number' %}selected{% endif %}>Л/C</option>
+                    <option value="phone_number" {% if request.GET.search_field == 'phone_number' %}selected{% endif %}>Телефон</option>
+                </select>
+                <input type="text" name="search_value" placeholder="Поиск" class="border p-2 rounded w-full" value="{{ request.GET.search_value }}">
+                <button type="submit" class="px-6 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition">
+                    Искать
+                </button>
+            </form>            
+        </div> 
+        <div class="overflow-x-auto">
+            <table class="min-w-full table-auto bg-white border border-gray-200">
+                <thead>
+                    <tr class="bg-gray-100">
+                        <th class="px-4 py-2 text-left">
+                            <a href="?sort=id" class="hover:underline">№</a>
+                        </th>
+                        <th class="px-4 py-2 text-left">
+                            <a href="?sort=client_name" class="hover:underline">ФИО</a>
+                        </th>
+                        <th class="px-4 py-2 text-left">Л/C</th>
+                        <th class="px-4 py-2 text-left">Телефон</th>
+                        <th class="px-4 py-2 text-left">Описание</th>
+                        <th class="px-4 py-2 text-left">Испольнитель</th>
+                        <th class="px-4 py-2 text-left">Статус</th> 
+                        <th class="px-4 py-2 text-left"></th>
+                    </tr>                    
+                </thead>
+                <tbody>
+                    {% for ticket in tickets %}
+                    <tr class="border-b">
+                        <td class="px-4 py-2">{{ ticket.id }}</td>
+                        <td class="px-4 py-2">{{ ticket.client_name }}</td>
+                        <td class="px-4 py-2">{{ ticket.account_number }}</td>
+                        <td class="px-4 py-2">{{ ticket.phone_number }}</td>
+                        <td class="px-4 py-2">
+                            <a href="{% url 'ticket-details' ticket.id %}" class="text-blue-500 hover:underline">
+                                {{ ticket.description|truncatechars:20 }}
+                            </a>
+                        </td> 
+                        <td class="px-4 py-2">{{ ticket.assigned_to }}</td>
+                        <td class="px-4 py-2">
+                            <span class="px-2 py-1 rounded text-white 
+                                {% if ticket.status.id ==  2 %} bg-yellow-500 
+                                {% elif ticket.status.id == 4 %} bg-green-500 
+                                {% else %} bg-red-500 {% endif %}">
+                                {{ ticket.status }}
+                            </span>
+                        </td> 
+                        <td class="px-4 py-2">
+                            <div class="action-container flex justify-end items-center relative">
+                                <div class="action-buttons absolute right-12 z-10 hidden flex space-x-2"> 
+                                    <button class="bg-yellow-500 text-white hover:bg-yellow-600 px-3 py-2 rounded" title="Деталь" onclick="detailAction('{{ ticket.id }}')"> 
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-ticket-detailed-fill" viewBox="0 0 16 16">
+                                            <path d="M0 4.5A1.5 1.5 0 0 1 1.5 3h13A1.5 1.5 0 0 1 16 4.5V6a.5.5 0 0 1-.5.5 1.5 1.5 0 0 0 0 3 .5.5 0 0 1 .5.5v1.5a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 0 11.5V10a.5.5 0 0 1 .5-.5 1.5 1.5 0 1 0 0-3A.5.5 0 0 1 0 6zm4 1a.5.5 0 0 0 .5.5h7a.5.5 0 0 0 0-1h-7a.5.5 0 0 0-.5.5m0 5a.5.5 0 0 0 .5.5h7a.5.5 0 0 0 0-1h-7a.5.5 0 0 0-.5.5M4 8a1 1 0 0 0 1 1h6a1 1 0 1 0 0-2H5a1 1 0 0 0-1 1"/>
+                                        </svg>
+                                        <button class="bg-green-500 text-white hover:bg-green-600 px-3 py-2 rounded" title="Выполнить" onclick="doneAction('{{ ticket.id }}')"> 
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-check-circle" viewBox="0 0 16 16">
+                                                <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
+                                                <path d="m10.97 4.97-.02.022-3.473 4.425-2.093-2.094a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-1.071-1.05"/>
+                                            </svg>
+                                        </button>
+                                    </button> 
+                                    <button class="bg-blue-500 text-white hover:bg-blue-600 px-3 py-2 rounded" title="В обработку" onclick="processAction('{{ ticket.id }}')"> 
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="animate-spin text-yellow-500" viewBox="0 0 16 16">
+                                            <path d="M8 1a7 7 0 1 0 7 7A7.008 7.008 0 0 0 8 1zm0 1a6 6 0 1 1-6 6 6.006 6.006 0 0 1 6-6zm0 4.5a.5.5 0 0 1 .5.5v3a.5.5 0 0 1-1 0v-3a.5.5 0 0 1 .5-.5z"/>
+                                        </svg>                                          
+                                    </button> 
+                                </div>
+                                <button class="bg-blue-300 text-gray-700 hover:bg-gray-400 px-3 py-2 rounded mt-2 toggle-button cursor-pointer" onclick="toggleActions(this)">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-list" viewBox="0 0 16 16">
+                                        <path fill-rule="evenodd" d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5"/>
+                                      </svg>
+                                </button>
+
+
+
+                            </div>
+                        </td>                                              
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <div id="comment-form" class="hidden">
+                <form id="complete-ticket-form" method="POST">
+                    {% csrf_token %}
+                    <div class="mb-4">
+                        <label for="comments" class="block text-sm font-medium text-gray-700">Комментарий</label>
+                        <textarea name="comments" id="comments" class="input w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+                        <div id="comments-error" class="text-red-500 text-sm mt-2"></div>
+                    </div>
+                    <button type="submit" class="px-6 py-3 bg-blue-500 text-white font-bold rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-300">
+                        Сохранить изменения
+                    </button>
+                </form>
+            </div>
+        </div> 
+        <div class="flex justify-center items-center mt-6">
+            <div class="flex space-x-3">
+                {% if tickets.has_previous %}
+                    <a href="?page=1{% if search_field and search_value %}&search_field={{ search_field }}&search_value={{ search_value }}{% endif %}" class="px-4 py-2 bg-teal-500 text-white font-bold rounded-l-lg hover:bg-teal-600 transition duration-300">
+                        Первая
+                    </a>
+                    <a href="?page={{ tickets.previous_page_number }}{% if search_field and search_value %}&search_field={{ search_field }}&search_value={{ search_value }}{% endif %}" class="px-4 py-2 bg-teal-500 text-white font-bold hover:bg-teal-600 transition duration-300">
+                        Назад
+                    </a>
+                {% else %}
+                    <span class="px-4 py-2 bg-gray-300 text-gray-500 font-bold rounded-l-lg cursor-not-allowed">Первая</span>
+                    <span class="px-4 py-2 bg-gray-300 text-gray-500 font-bold cursor-not-allowed">Назад</span>
+                {% endif %}
+        
+                <span class="text-lg text-gray-700">Страница {{ tickets.number }} из {{ tickets.paginator.num_pages }}</span>
+        
+                {% if tickets.has_next %}
+                    <a href="?page={{ tickets.next_page_number }}{% if search_field and search_value %}&search_field={{ search_field }}&search_value={{ search_value }}{% endif %}" class="px-4 py-2 bg-teal-500 text-white font-bold hover:bg-teal-600 transition duration-300">
+                        Вперед
+                    </a>
+                    <a href="?page={{ tickets.paginator.num_pages }}{% if search_field and search_value %}&search_field={{ search_field }}&search_value={{ search_value }}{% endif %}" class="px-4 py-2 bg-teal-500 text-white font-bold rounded-r-lg hover:bg-teal-600 transition duration-300">
+                        Последняя
+                    </a>
+                {% else %}
+                    <span class="px-4 py-2 bg-gray-300 text-gray-500 font-bold rounded-r-lg cursor-not-allowed">Вперед</span>
+                    <span class="px-4 py-2 bg-gray-300 text-gray-500 font-bold cursor-not-allowed">Последняя</span>
+                {% endif %}
+            </div>
+        </div>   
+    </div>
+</div>
+
+
+
+<script>
+    /**
+     * Общая документация для функций:
+     *
+     * 1. toggleActions(button):
+     *    Управляет отображением панели действий для строки таблицы. При нажатии на кнопку "toggle" открывает или закрывает соответствующие кнопки действий в строке таблицы.
+     *    Если другая панель действий уже открыта, она закрывается перед открытием новой.
+     *
+     * 2. doneAction(ticketId):
+     *    Проверяет статус заявки перед тем, как завершить её обработку. Если заявка готова, перенаправляет пользователя на страницу завершения.
+     *    В случае ошибки показывает сообщение об ошибке.
+     *
+     * 3. processAction(ticketId):
+     *    Отправляет POST-запрос для обработки заявки с указанным ID. После успешной обработки обновляется страница.
+     *
+     * 4. detailAction(ticketId):
+     *    Перенаправляет пользователя на страницу с подробной информацией о заявке с заданным ID.
+     */
+    let openButton = null;
+
+    function toggleActions(button) { 
+        const row = button.closest('tr'); 
+        const actionButtons = row.querySelector('.action-buttons');
+        if (openButton && openButton !== actionButtons) {
+            openButton.style.display = 'none'; 
+        } 
+        const isOpen = actionButtons.style.display === 'flex'; 
+        actionButtons.style.display = isOpen ? 'none' : 'flex';  
+        openButton = isOpen ? null : actionButtons; 
+    }
+    
+    document.addEventListener('click', function(event) {
+    const target = event.target;
+    const row = target.closest('tr');
+    const actionButtons = row ? row.querySelector('.action-buttons') : null;
+
+    if (actionButtons && !target.closest('.action-buttons') && !target.closest('.toggle-button')) {
+        actionButtons.style.display = 'none';
+    }
+    }); 
+    function doneAction(ticketId) { 
+            fetch(`/complete-ticket/${ticketId}/check-status/`, {
+                method: 'GET',
+                headers: {
+                    "X-Requested-With": "XMLHttpRequest"
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) { 
+                    window.location.href = `/complete-ticket/${ticketId}/`;
+                } else { 
+                    alert(data.error);
+                }
+            })
+            .catch(error => { 
+                alert("Произошла ошибка. Попробуйте снова.");
+            });
+        }
+
+
+    function processAction(ticketId) { 
+        fetch(`/process-ticket/${ticketId}/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value 
+            },
+            body: JSON.stringify({})  
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                alert('Заявка успешно обработан!'); 
+                window.location.reload();
+            } else {
+                alert(data.message);
+            }
+        })
+        .catch(error => { 
+            alert('Ошибка при отправке запроса');
+        });
+    }
+    function detailAction(ticketId) { 
+        window.location.href = `/ticket-details/${ticketId}/`;
+    }
+</script>
+{% endblock %}

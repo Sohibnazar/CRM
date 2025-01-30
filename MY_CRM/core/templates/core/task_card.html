@@ -1,0 +1,28 @@
+<div class="bg-gradient-to-r {% if role == 'operator' %}from-blue-100 to-blue-200{% elif role == 'back_office' %}from-green-100 to-green-200{% else %}from-red-100 to-red-200{% endif %} rounded-xl shadow-md p-6 text-center">
+    <h2 class="text-2xl font-bold {% if role == 'operator' %}text-blue-800{% elif role == 'back_office' %}text-green-800{% else %}text-red-800{% endif %} mb-4">
+        {% if role == 'operator' %}
+            Ваши задачи
+        {% elif role == 'back_office' %}
+            Задачи бэк-офиса
+        {% else %}
+            Информация
+        {% endif %}
+    </h2>
+    {% if role == 'operator' %}
+    <ul class="space-y-2 text-blue-700 leading-relaxed">
+        <li>Создать новую заявку.</li>
+        <li>Просмотреть список своих заявок.</li>
+        <li>Контролировать статус обработки заявок.</li>
+    </ul>
+    {% elif role == 'back_office' %}
+    <ul class="space-y-2 text-green-700 leading-relaxed">
+        <li>Обрабатывать заявки от операторов.</li>
+        <li>Создавать и формировать отчёты.</li>
+        <li>Управлять статусами заявок и распределением задач.</li>
+    </ul>
+    {% else %}
+    <p class="text-red-700 leading-relaxed">
+        У вас пока нет назначенной роли. Обратитесь к администратору системы.
+    </p>
+    {% endif %}
+</div>

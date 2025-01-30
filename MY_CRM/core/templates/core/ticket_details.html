@@ -1,0 +1,77 @@
+{% extends 'core/index.html' %}
+
+{% block title %}Детали задачи{% endblock %}
+
+{% block content %}
+<div class="flex">
+    {% include 'core/sidebar.html' %}
+    <div class="container mx-auto p-6 pl-72 w-full">
+        <h1 class="text-3xl font-semibold text-gray-800 mb-6">Детали задачи</h1>
+
+        <div class="bg-white shadow-xl rounded-lg p-6 mb-6">
+            <h2 class="text-xl font-bold mb-4">Описание задачи</h2>
+            <div class="space-y-2">
+                <p><strong>Клиент:</strong> {{ ticket.client_name }}</p>
+                <p><strong>Номер счета:</strong> {{ ticket.account_number }}</p>
+                <p><strong>Телефон:</strong> {{ ticket.phone_number }}</p>
+                <p><strong>Описание:</strong> {{ ticket.description }}</p>
+                <p><strong>Статус:</strong> {{ ticket.status }}</p>
+                <p><strong>Назначено:</strong> {{ ticket.assigned_to }}</p>
+                <p><strong>Создано:</strong> {{ ticket.created_at }}</p>
+            </div>
+        </div>
+
+        <div class="bg-gray-50 shadow-xl rounded-lg p-6 mb-6">
+            <h2 class="text-xl font-bold mb-4">Обсуждение</h2>
+            {% if timeline %}
+                <ul class="space-y-4">
+                    {% for item in timeline %}
+                        {% if item.type == 'comment' %}
+                            <li class="bg-white p-4 rounded-lg shadow-md hover:shadow-lg transition duration-300">
+                                <div class="flex items-center space-x-3">
+                                    <div class="h-10 w-10 rounded-full bg-blue-500 text-white flex items-center justify-center">
+                                        <i class="fas fa-user"></i>
+                                    </div>
+                                    <p class="font-semibold">{{ item.object.author.username }}</p>
+                                </div>
+                                <p class="mt-2">{{ item.object.content }}</p>
+                                <p class="text-sm text-gray-500 mt-2">Создано: {{ item.object.created_at }}</p>
+                            </li>
+                        {% elif item.type == 'decision' %}
+                            <li class="bg-green-50 p-4 rounded-lg shadow-md hover:shadow-lg transition duration-300">
+                                <div class="flex items-center space-x-3">
+                                    <div class="h-10 w-10 rounded-full bg-green-500 text-white flex items-center justify-center">
+                                        <i class="fas fa-check"></i>
+                                    </div>
+                                    <p class="font-semibold">{{ item.object.author.username }}</p>
+                                </div>
+                                <p class="mt-2">{{ item.object.content }}</p>
+                                <p class="text-sm text-gray-500 mt-2">Создано: {{ item.object.created_at }}</p>
+                            </li>
+                        {% endif %}
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p class="text-gray-600">Нет комментариев или решений.</p>
+            {% endif %}
+        </div>
+
+        {% if profile.role == 'operator' %}
+            <a href="/new-ticket/" 
+            class="px-6 py-3 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 transition duration-300">
+                Вернуться назад
+            </a>
+        {% elif profile.role == 'back_office' %}
+            <a href="/back-office-rep/" 
+            class="px-6 py-3 bg-green-600 text-white font-bold rounded-lg hover:bg-green-700 transition duration-300">
+                Вернуться назад
+            </a>
+        {% else %}
+            <a href="/" 
+            class="px-6 py-3 bg-gray-600 text-white font-bold rounded-lg hover:bg-gray-700 transition duration-300">
+                Вернуться назад
+            </a>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

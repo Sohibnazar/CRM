@@ -1,0 +1,51 @@
+{% extends 'core/index.html' %}
+
+{% block title %}Добавить обращение{% endblock %}
+
+{% block content %}
+<div class="flex"> 
+    {% include 'core/sidebar.html' %} 
+    <div class="container mx-auto p-6 pl-72 w-full">
+        <h1 class="text-3xl font-semibold text-gray-800 mb-6">Добавить обращение</h1>
+
+        <form method="POST" class="space-y-6">
+            {% csrf_token %}
+            <div class="mb-4">
+                <label for="client_name" class="block text-sm font-medium text-gray-700">ФИО клиента</label>
+                <input type="text" name="client_name" id="client_name" class="input w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required pattern="[A-Za-zА-Яа-яЁё\s\-]+" title="Только буквы и пробелы">
+            </div> 
+            <div class="mb-4">
+                <label for="account_number" class="block text-sm font-medium text-gray-700">Лицевой счет</label>
+                <input type="text" name="account_number" id="account_number" class="input w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required pattern="\d+" title="Только цифры">
+            </div> 
+            <div class="mb-4">
+                <label for="phone_number" class="block text-sm font-medium text-gray-700">Телефон</label>
+                <input type="text" name="phone_number" id="phone_number" class="input w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required pattern="\d+" title="Только цифры">
+            </div> 
+            <div class="mb-4">
+                <label for="description_content" class="block text-sm font-medium text-gray-700">Описание</label>
+                <textarea name="description" id="description_content" class="input w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+            </div> 
+            {% if show_assigned_to_field %}
+                <div class="mb-4">
+                    <label for="assigned_to" class="block text-sm font-medium text-gray-700">Назначить сотрудника</label>
+                    <select name="assigned_to" id="assigned_to" class="input w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option value="">Выберите сотрудника</option>
+                        {% for user in form.assigned_to.field.queryset %}
+                            <option value="{{ user.id }}" {% if form.assigned_to.value == user.id %}selected{% endif %}>{{ user.username }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            {% endif %}
+            <div class="flex justify-end"> 
+                <a href="{% url 'new_ticket' %}" class="px-6 py-3 bg-gray-500 text-white font-bold rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-gray-500 transition duration-300 mr-4">
+                    Отменить
+                </a> 
+                <button type="submit" class="px-6 py-3 bg-gray-500 text-white font-bold rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-300">
+                    Сохранить обращение
+                </button>
+            </div>            
+        </form>
+    </div>
+</div>
+{% endblock %}

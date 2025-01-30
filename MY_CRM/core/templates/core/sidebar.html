@@ -1,0 +1,30 @@
+<div class="w-64 bg-gray-800 text-white h-full fixed">
+    <div class="p-6 text-center text-2xl font-bold border-b border-gray-700">Меню</div>
+    <ul class="space-y-2 mt-4 px-2">
+        {% if user.is_authenticated %}
+            {% if profile.role == 'operator' %}
+                <li>
+                    <a href="{% url 'new_ticket' %}" class="block py-2 px-4 rounded hover:bg-gray-700">Новая заявка</a>
+                </li>
+                <li>
+                    <a href="{% url 'my_ticket' %}" class="block py-2 px-4 rounded hover:bg-gray-700">Мои обращения</a>
+                </li>
+            {% elif profile.role == 'back_office' %}
+                <li>
+                    <a href="{% url 'ticket-to-process' %}" class="block py-2 px-4 rounded hover:bg-gray-700">Заявки на обработку</a>
+                </li>
+                <li>
+                    <a href="{% url 'back-office-rep' %}" class="block py-2 px-4 rounded hover:bg-gray-700">Просмотр отчетов</a>
+                </li>
+            {% else %}
+                <li>
+                    <span class="block py-2 px-4 rounded text-gray-500">Роль не назначена</span>
+                </li>
+            {% endif %}
+        {% else %}
+            <li>
+                <span class="block py-2 px-4 rounded text-gray-500">Войдите в систему</span>
+            </li>
+        {% endif %}
+    </ul>
+</div>

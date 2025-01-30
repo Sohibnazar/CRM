@@ -1,0 +1,11 @@
+venv/
+*.pyc
+*.pyo
+__pycache__/
+.vscode/
+.idea/
+userprofile/__pycache__/
+userprofile/migrations/
+core/__pycache__/
+core/migrations/
+MY_CRM/__pycache__/

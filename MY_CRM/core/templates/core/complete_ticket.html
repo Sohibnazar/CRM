@@ -1,0 +1,73 @@
+{% extends 'core/index.html' %}
+
+{% block title %}Добавить решение{% endblock %}
+
+{% block content %}
+<div class="flex">
+    {% include 'core/sidebar.html' %}
+    <div class="container mx-auto p-6 pl-72 w-full">
+        <h1 class="text-3xl font-semibold text-gray-800 mb-6">Добавить решение</h1>
+        <form id="decision-form">
+            {% csrf_token %}
+            <div class="mb-4">
+                <label for="decision" class="block text-sm font-medium text-gray-700">Решения</label>
+                <textarea name="decision" id="decision" class="input w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">{{ ticket.decision }}</textarea>
+                <div id="decision-error" class="text-red-500 text-sm mt-2"></div>
+            </div>
+            <div id="response-message" class="mb-4"></div>
+            <div class="flex justify-end space-x-4">
+                <a id="cancel-btn" href="/ticket-to-process/"
+                   class="px-6 py-3 bg-gray-300 text-gray-700 font-bold rounded-lg hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500 transition duration-300">
+                    Отменить
+                </a>
+                <button type="submit" 
+                        class="px-6 py-3 bg-blue-500 text-white font-bold rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-300">
+                    Сохранить изменения
+                </button>
+            </div>
+        </form> 
+    </div>
+</div>
+
+<script>
+    /**
+     * Обработчик отправки формы для принятия решения.
+     * 
+     * 1. Отменяет стандартное поведение формы (перезагрузку страницы).
+     * 2. Получает значение принятого решения, проверяет его на пустоту.
+     * 3. Отправляет POST-запрос с решением на сервер с использованием AJAX.
+     * 4. Если запрос успешен, отображает сообщение и перенаправляет пользователя на страницу обработки заявки.
+     * 5. В случае ошибки выводит сообщение об ошибке. 
+     */
+    document.getElementById('decision-form').addEventListener('submit', function (e) {
+        e.preventDefault();
+        const decision = document.getElementById('decision').value.trim();
+        if (!decision) {
+            alert("Решения  не может быть пустым.");
+            return;
+        }
+
+        fetch("", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": document.querySelector('[name=csrfmiddlewaretoken]').value,
+                "X-Requested-With": "XMLHttpRequest"
+            },
+            body: JSON.stringify({ decision: decision })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert(data.success);
+                window.location.href = "/ticket-to-process/";   
+            } else {
+                alert(data.error);
+            }
+        })
+        .catch(error => { 
+            alert("Произошла ошибка. Попробуйте снова.");
+        });
+    });
+</script>
+{% endblock %}

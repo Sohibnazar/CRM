@@ -1,0 +1,73 @@
+{% extends 'core/index.html' %}
+
+{% block title %}Добавить Коментария{% endblock %}
+
+{% block content %}
+<div class="flex">
+    {% include 'core/sidebar.html' %}
+    <div class="container mx-auto p-6 pl-72 w-full">
+        <h1 class="text-3xl font-semibold text-gray-800 mb-6">Добавить Коментария</h1>
+        <form id="comment-form">
+            {% csrf_token %}
+            <div class="mb-4">
+                <label for="comments" class="block text-sm font-medium text-gray-700">Коментария</label>
+                <textarea name="comments" id="comments" class="input w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+                <div id="comments-error" class="text-red-500 text-sm mt-2"></div>
+            </div>
+            <div id="response-message" class="mb-4"></div>
+            <div class="flex justify-end space-x-4">
+                <a id="cancel-btn" href="/new-ticket/"
+                   class="px-6 py-3 bg-gray-300 text-gray-700 font-bold rounded-lg hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500 transition duration-300">
+                    Отменить
+                </a>
+                <button type="submit" 
+                        class="px-6 py-3 bg-blue-500 text-white font-bold rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-300">
+                    Сохранить коментария
+                </button>
+            </div>
+        </form> 
+    </div>
+</div>
+
+<script>
+    /**
+     * Обработчик отправки формы комментариев.
+     * 
+     * 1. Отменяет стандартное поведение формы (перезагрузку страницы).
+     * 2. Получает значение комментария, проверяет его на пустоту.
+     * 3. Отправляет POST-запрос с комментариями на сервер с использованием AJAX.
+     * 4. Если запрос успешен, отображает сообщение и перенаправляет пользователя на страницу для создания нового тикета.
+     * 5. В случае ошибки выводит сообщение об ошибке. 
+     */
+    document.getElementById('comment-form').addEventListener('submit', function (e) {
+        e.preventDefault();
+        const comments = document.getElementById('comments').value.trim();
+        if (!comments) {
+            alert("Комментария  не может быть пустым.");
+            return;
+        }
+
+        fetch("", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": document.querySelector('[name=csrfmiddlewaretoken]').value,
+                "X-Requested-With": "XMLHttpRequest"
+            },
+            body: JSON.stringify({ comments: comments })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert(data.success);
+                window.location.href = "/new-ticket/";   
+            } else {
+                alert(data.error);
+            }
+        })
+        .catch(error => { 
+            alert("Произошла ошибка. Попробуйте снова.");
+        });
+    });
+</script>
+{% endblock %}

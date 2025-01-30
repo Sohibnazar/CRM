@@ -1,0 +1,28 @@
+{% extends 'core/base.html' %}
+
+{% block title %}
+    Мой CRM
+{% endblock %}
+
+{% block content %}
+<div class="flex">
+    {% include 'core/sidebar.html' %}
+
+    <div class="flex-grow ml-64 p-8 bg-gradient-to-r from-gray-100 to-gray-50 min-h-screen">
+        <div class="bg-white shadow-lg rounded-lg p-8 mb-8 text-center">
+            <h1 class="text-4xl font-extrabold text-gray-800 mb-4">Добро пожаловать в CRM</h1>
+            <p class="text-lg text-gray-600 leading-relaxed">
+                Здравствуйте, <span class="font-bold text-blue-600">{{ user.username }}</span>!
+                <br>
+                Вы вошли как <span class="font-semibold text-green-500">{{ profile.role|default:"пользователь" }}</span>.
+            </p>
+        </div>        
+        {% include 'core/task_card.html' with role=profile.role %}
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
+            {% include 'core/stats_card.html' with count=tickets_count label="Всего заявок" icon="ticket" %}
+            {% include 'core/stats_card.html' with count=open_tickets_count label="Открытые" color="green" %}
+            {% include 'core/stats_card.html' with count=closed_tickets_count label="Закрытые" color="red" %}
+        </div>
+    </div>    
+</div>
+{% endblock %}

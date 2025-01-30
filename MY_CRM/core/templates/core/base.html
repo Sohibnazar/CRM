@@ -1,0 +1,31 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <title>{% block title %}{% endblock %}</title>
+</head>
+<body class="min-h-screen flex flex-col">  
+    <nav class="py-6 px-6 flex justify-between bg-teal-500 fixed top-0 left-0 right-0 z-50 shadow-lg">
+        <a href="/" class="text-white text-2xl font-extrabold">Мой CRM</a>
+        <div class="space-x-4">
+            {% if user.is_authenticated %} 
+                <form method="post" action="/accounts/logout/" class="inline">
+                    {% csrf_token %}
+                    <button type="submit" class="py-4 px-6 bg-teal-600 rounded-xl text-white focus:outline-none hover:bg-teal-700">
+                        Выйти
+                    </button>
+                </form>  
+                <a href="/about" class="py-4 px-6 bg-teal-600 rounded-xl text-white">O CRM</a>  
+            {% endif %}
+        </div>
+    </nav>
+     
+    <div class="flex-grow pt-24">  
+        {% block content %}
+        {% endblock %}
+    </div> 
+</body>
+</html>
